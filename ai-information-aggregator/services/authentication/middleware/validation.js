@@ -186,3 +186,52 @@ exports.validateNotifications = (req, res, next) => {
   
   next();
 };
+
+/**
+ * Validate credential data
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+exports.validateCredential = (req, res, next) => {
+  // Different schema for create and update
+  const isCreate = !req.params.id;
+  
+  const schema = Joi.object({
+    service: isCreate ? Joi.string().required().trim().messages({
+      'string.empty': 'Service name is required'
+    }) : Joi.string().trim(),
+    
+    name: isCreate ? Joi.string().required().trim().max(100).messages({
+      'string.empty': 'Credential name is required',
+      'string.max': 'Credential name cannot exceed 100 characters'
+    }) : Joi.string().trim().max(100).messages({
+      'string.max': 'Credential name cannot exceed 100 characters'
+    }),
+    
+    description: Joi.string().trim().max(500).allow('').messages({
+      'string.max': 'Description cannot exceed 500 characters'
+    }),
+    
+    credentials: isCreate ? Joi.object().required().messages({
+      'object.base': 'Credentials must be an object'
+    }) : Joi.object().messages({
+      'object.base': 'Credentials must be an object'
+    }),
+    
+    expiresAt: Joi.date().allow(null),
+    
+    metadata: Joi.object().pattern(
+      Joi.string(),
+      Joi.string()
+    ).allow(null)
+  });
+  
+  const { error } = schema.validate(req.body);
+  
+  if (error) {
+    return next(new ApiError(400, error.details[0].message));
+  }
+  
+  next();
+};

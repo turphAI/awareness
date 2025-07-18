@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['user', 'admin', 'editor', 'moderator'],
     default: 'user'
   },
   preferences: {
@@ -128,7 +128,81 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
     select: false
-  }
+  },
+  // New fields for account deletion
+  accountDeletionScheduled: {
+    type: Date,
+    default: null
+  },
+  accountDeleted: {
+    type: Boolean,
+    default: false
+  },
+  accountDeletedAt: {
+    type: Date,
+    default: null
+  },
+  // Data retention preferences
+  dataRetention: {
+    contentHistory: {
+      type: Boolean,
+      default: true
+    },
+    searchHistory: {
+      type: Boolean,
+      default: true
+    },
+    interactionData: {
+      type: Boolean,
+      default: true
+    },
+    usageStatistics: {
+      type: Boolean,
+      default: true
+    }
+  },
+  // Privacy settings
+  privacySettings: {
+    shareUsageData: {
+      type: Boolean,
+      default: true
+    },
+    allowRecommendations: {
+      type: Boolean,
+      default: true
+    },
+    allowContentTracking: {
+      type: Boolean,
+      default: true
+    },
+    allowThirdPartySharing: {
+      type: Boolean,
+      default: false
+    }
+  },
+  // Consent tracking
+  consents: [{
+    type: {
+      type: String,
+      enum: ['privacy_policy', 'terms_of_service', 'marketing', 'cookies', 'data_processing'],
+      required: true
+    },
+    version: {
+      type: String,
+      required: true
+    },
+    given: {
+      type: Boolean,
+      default: false
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now
+    },
+    ipAddress: {
+      type: String
+    }
+  }]
 }, {
   timestamps: true
 });
@@ -137,6 +211,8 @@ const userSchema = new mongoose.Schema({
 userSchema.index({ email: 1 });
 userSchema.index({ 'preferences.topics': 1 });
 userSchema.index({ active: 1 });
+userSchema.index({ accountDeletionScheduled: 1 });
+userSchema.index({ accountDeleted: 1 });
 
 /**
  * Pre-save hook to hash password before saving
@@ -244,6 +320,107 @@ userSchema.methods.updateProfile = function(profileData) {
 };
 
 /**
+ * Schedule account for deletion
+ * @param {number} daysDelay - Number of days before deletion
+ * @returns {Promise<Document>} - Updated user document
+ */
+userSchema.methods.scheduleAccountDeletion = function(daysDelay = 30) {
+  const deletionDate = new Date();
+  deletionDate.setDate(deletionDate.getDate() + daysDelay);
+  
+  this.accountDeletionScheduled = deletionDate;
+  return this.save();
+};
+
+/**
+ * Cancel scheduled account deletion
+ * @returns {Promise<Document>} - Updated user document
+ */
+userSchema.methods.cancelAccountDeletion = function() {
+  this.accountDeletionScheduled = null;
+  return this.save();
+};
+
+/**
+ * Execute account deletion (anonymize data)
+ * @returns {Promise<Document>} - Updated user document
+ */
+userSchema.methods.executeAccountDeletion = async function() {
+  // Generate random string for anonymization
+  const randomString = crypto.randomBytes(8).toString('hex');
+  
+  // Anonymize personal data
+  this.email = `deleted-${randomString}@example.com`;
+  this.name = 'Deleted User';
+  this.passwordHash = await bcrypt.hash(crypto.randomBytes(16).toString('hex'), 10);
+  this.profile = {};
+  this.preferences = {};
+  this.notifications = {};
+  
+  // Mark as deleted
+  this.active = false;
+  this.accountDeleted = true;
+  this.accountDeletedAt = new Date();
+  this.accountDeletionScheduled = null;
+  
+  return this.save();
+};
+
+/**
+ * Record user consent
+ * @param {string} type - Consent type
+ * @param {string} version - Policy version
+ * @param {boolean} given - Whether consent was given
+ * @param {string} ipAddress - User's IP address
+ * @returns {Promise<Document>} - Updated user document
+ */
+userSchema.methods.recordConsent = function(type, version, given, ipAddress) {
+  // Remove existing consent of the same type
+  this.consents = this.consents.filter(consent => consent.type !== type);
+  
+  // Add new consent
+  this.consents.push({
+    type,
+    version,
+    given,
+    timestamp: new Date(),
+    ipAddress
+  });
+  
+  return this.save();
+};
+
+/**
+ * Check if user has given consent
+ * @param {string} type - Consent type
+ * @returns {boolean} - Whether consent was given
+ */
+userSchema.methods.hasConsent = function(type) {
+  const consent = this.consents.find(c => c.type === type);
+  return consent ? consent.given : false;
+};
+
+/**
+ * Update data retention preferences
+ * @param {Object} preferences - New data retention preferences
+ * @returns {Promise<Document>} - Updated user document
+ */
+userSchema.methods.updateDataRetention = function(preferences) {
+  this.dataRetention = { ...this.dataRetention, ...preferences };
+  return this.save();
+};
+
+/**
+ * Update privacy settings
+ * @param {Object} settings - New privacy settings
+ * @returns {Promise<Document>} - Updated user document
+ */
+userSchema.methods.updatePrivacySettings = function(settings) {
+  this.privacySettings = { ...this.privacySettings, ...settings };
+  return this.save();
+};
+
+/**
  * Find user by email
  * @param {string} email - User email
  * @returns {Promise<Document>} - User document
@@ -283,6 +460,18 @@ userSchema.statics.findByVerificationToken = function(token) {
   
   return this.findOne({
     emailVerificationToken: hashedToken,
+    active: true
+  });
+};
+
+/**
+ * Find users scheduled for deletion
+ * @returns {Promise<Array>} - Array of user documents
+ */
+userSchema.statics.findScheduledForDeletion = function() {
+  return this.find({
+    accountDeletionScheduled: { $lt: new Date() },
+    accountDeleted: false,
     active: true
   });
 };

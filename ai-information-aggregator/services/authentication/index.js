@@ -48,10 +48,16 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/ai-aggregat
 // Import routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
+const adminRoutes = require('./routes/admin');
+const credentialRoutes = require('./routes/credentials');
+const privacyRoutes = require('./routes/privacy');
 
 // Use routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/credentials', credentialRoutes);
+app.use('/api/privacy', privacyRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

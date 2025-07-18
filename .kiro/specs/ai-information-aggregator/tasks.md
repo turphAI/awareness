@@ -37,26 +37,26 @@
     - Write unit tests for both models
     - _Requirements: 5.3, 6.5_
 
-- [ ] 3. Implement Authentication & Authorization Service
-  - [ ] 3.1 Create user registration and authentication endpoints
+- [x] 3. Implement Authentication & Authorization Service
+  - [x] 3.1 Create user registration and authentication endpoints
     - Implement secure password handling
     - Create JWT token generation and validation
     - Write unit tests for authentication flows
     - _Requirements: 8.1, 8.2_
 
-  - [ ] 3.2 Implement role-based access control
+  - [x] 3.2 Implement role-based access control
     - Create permission system for different user roles
     - Implement middleware for authorization checks
     - Write unit tests for authorization logic
     - _Requirements: 8.1, 8.2_
 
-  - [ ] 3.3 Implement secure credential storage
+  - [x] 3.3 Implement secure credential storage
     - Create encrypted storage for external service credentials
     - Implement secure retrieval mechanisms
     - Write unit tests for credential management
     - _Requirements: 1.6, 8.2_
 
-  - [ ] 3.4 Implement data privacy features
+  - [x] 3.4 Implement data privacy features
     - Create endpoints for data export
     - Implement account deletion functionality
     - Write unit tests for privacy features

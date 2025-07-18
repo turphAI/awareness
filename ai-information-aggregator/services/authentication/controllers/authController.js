@@ -1,6 +1,11 @@
 const User = require('../models/User');
 const { ApiError } = require('../../../common/utils/errorHandler');
 const crypto = require('crypto');
+const emailService = require('../utils/emailService');
+const createLogger = require('../../../common/utils/logger');
+
+// Configure logger
+const logger = createLogger('auth-controller');
 
 /**
  * Register a new user
@@ -30,7 +35,13 @@ exports.register = async (req, res, next) => {
     // Save user
     await user.save();
     
-    // TODO: Send verification email
+    // Send verification email
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const emailSent = await emailService.sendVerificationEmail(user, verificationToken, baseUrl);
+    
+    if (!emailSent) {
+      logger.warn(`Failed to send verification email to ${user.email}`);
+    }
     
     // Generate auth token
     const token = user.generateAuthToken();
@@ -47,6 +58,11 @@ exports.register = async (req, res, next) => {
         emailVerified: user.emailVerified
       },
       message: 'Registration successful. Please verify your email.'
+    });
+    
+    // Send welcome email asynchronously (don't wait for it)
+    emailService.sendWelcomeEmail(user).catch(err => {
+      logger.error(`Failed to send welcome email to ${user.email}:`, err);
     });
   } catch (error) {
     next(error);
@@ -185,7 +201,13 @@ exports.forgotPassword = async (req, res, next) => {
     const resetToken = user.generatePasswordResetToken();
     await user.save();
     
-    // TODO: Send password reset email
+    // Send password reset email
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const emailSent = await emailService.sendPasswordResetEmail(user, resetToken, baseUrl);
+    
+    if (!emailSent) {
+      logger.warn(`Failed to send password reset email to ${user.email}`);
+    }
     
     // Send response
     res.status(200).json({
