@@ -62,26 +62,26 @@
     - Write unit tests for privacy features
     - _Requirements: 8.4, 8.5_
 
-- [ ] 4. Implement Source Management Service
-  - [ ] 4.1 Create source validation and storage functionality
+- [-] 4. Implement Source Management Service
+  - [x] 4.1 Create source validation and storage functionality
     - Implement URL validation and metadata extraction
     - Create CRUD operations for sources
     - Write unit tests for source management
     - _Requirements: 1.1, 1.4_
 
-  - [ ] 4.2 Implement source categorization system
+  - [x] 4.2 Implement source categorization system
     - Create category management functionality
     - Implement automatic category suggestion
     - Write unit tests for categorization
     - _Requirements: 1.2_
 
-  - [ ] 4.3 Implement relevance rating system
+  - [x] 4.3 Implement relevance rating system
     - Create rating mechanism for sources
     - Implement priority adjustment based on ratings
     - Write unit tests for relevance system
     - _Requirements: 1.3_
 
-  - [ ] 4.4 Implement authentication management for protected sources
+  - [x] 4.4 Implement authentication management for protected sources
     - Create secure storage for source credentials
     - Implement session management for authenticated sources
     - Write unit tests for authentication handling
