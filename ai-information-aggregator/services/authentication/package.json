@@ -1,0 +1,37 @@
+{
+  "name": "authentication-service",
+  "version": "0.1.0",
+  "description": "Authentication Service for AI Information Aggregator",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^6.0.0",
+    "bcrypt": "^5.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "winston": "^3.3.3",
+    "dotenv": "^10.0.0",
+    "joi": "^17.4.2",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "helmet": "^4.6.0",
+    "express-rate-limit": "^5.3.0",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6",
+    "nodemon": "^2.0.12",
+    "supertest": "^6.1.4",
+    "mongodb-memory-server": "^7.3.6"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
+}
