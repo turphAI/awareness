@@ -62,7 +62,7 @@
     - Write unit tests for privacy features
     - _Requirements: 8.4, 8.5_
 
-- [-] 4. Implement Source Management Service
+- [x] 4. Implement Source Management Service
   - [x] 4.1 Create source validation and storage functionality
     - Implement URL validation and metadata extraction
     - Create CRUD operations for sources
