@@ -33,10 +33,20 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/ai-aggregat
 // Import routes
 const collectionRoutes = require('./routes/collections');
 const interactionRoutes = require('./routes/interactions');
+const metadataRoutes = require('./routes/metadata');
+const searchRoutes = require('./routes/search');
+const relatedContentRoutes = require('./routes/relatedContent');
+const agingRoutes = require('./routes/aging');
+const exportRoutes = require('./routes/export');
 
 // Use routes
 app.use('/api/collections', collectionRoutes);
 app.use('/api/interactions', interactionRoutes);
+app.use('/api/metadata', metadataRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/related', relatedContentRoutes);
+app.use('/api/aging', agingRoutes);
+app.use('/api/export', exportRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
