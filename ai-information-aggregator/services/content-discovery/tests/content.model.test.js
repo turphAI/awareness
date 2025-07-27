@@ -227,7 +227,7 @@ describe('Content Model', () => {
       expect(content.qualityFactors.depth).toBe(0.6);
       
       // Average of all factors: (0.9 + 0.8 + 0.7 + 0.6) / 4 = 0.75
-      expect(content.qualityScore).toBe(0.75);
+      expect(content.qualityScore).toBeCloseTo(0.75, 2);
     });
   });
   

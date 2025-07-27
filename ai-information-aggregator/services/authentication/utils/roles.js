@@ -100,7 +100,7 @@ const hasPermission = (role, permission) => {
  * @param {string} role - User role
  * @returns {Array} - Array of permissions
  */
-const getPermissions = (role) => {
+const getRolePermissions = (role) => {
   return ROLE_PERMISSIONS[role] || [];
 };
 
@@ -116,7 +116,7 @@ const getRoles = () => {
  * Get all permissions
  * @returns {Object} - Object with permission names
  */
-const getPermissions = () => {
+const getAllPermissions = () => {
   return PERMISSIONS;
 };
 
@@ -125,6 +125,7 @@ module.exports = {
   PERMISSIONS,
   ROLE_PERMISSIONS,
   hasPermission,
-  getPermissions,
-  getRoles
+  getRolePermissions,
+  getRoles,
+  getAllPermissions
 };

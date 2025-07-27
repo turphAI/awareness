@@ -174,7 +174,7 @@ sourceSchema.index({ checkFrequency: 1 });
  */
 sourceSchema.methods.encryptCredentials = function(credentials) {
   const algorithm = 'aes-256-ctr';
-  const secretKey = process.env.CREDENTIAL_ENCRYPTION_KEY || 'default-key-do-not-use-in-production';
+  const secretKey = crypto.scryptSync(process.env.CREDENTIAL_ENCRYPTION_KEY || 'default-key-do-not-use-in-production', 'salt', 32);
   const iv = crypto.randomBytes(16);
   
   const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
@@ -202,7 +202,7 @@ sourceSchema.methods.decryptCredentials = function() {
   }
   
   const algorithm = 'aes-256-ctr';
-  const secretKey = process.env.CREDENTIAL_ENCRYPTION_KEY || 'default-key-do-not-use-in-production';
+  const secretKey = crypto.scryptSync(process.env.CREDENTIAL_ENCRYPTION_KEY || 'default-key-do-not-use-in-production', 'salt', 32);
   const decipher = crypto.createDecipheriv(
     algorithm,
     secretKey,
@@ -220,11 +220,109 @@ sourceSchema.methods.decryptCredentials = function() {
 /**
  * Update source relevance score
  * @param {number} score - New relevance score
+ * @param {Object} metadata - Optional metadata about the update
  * @returns {Promise<Document>} - Updated source document
  */
-sourceSchema.methods.updateRelevance = function(score) {
+sourceSchema.methods.updateRelevance = function(score, metadata = {}) {
   this.relevanceScore = score;
+  
+  // Store relevance update history in metadata if not already present
+  if (!this.metadata.has('relevanceHistory')) {
+    this.metadata.set('relevanceHistory', JSON.stringify([]));
+  }
+  
+  // Parse existing history
+  const history = JSON.parse(this.metadata.get('relevanceHistory') || '[]');
+  
+  // Add new entry to history
+  history.push({
+    score,
+    date: new Date(),
+    reason: metadata.reason || 'manual_update',
+    userId: metadata.userId || this.createdBy
+  });
+  
+  // Keep only the last 10 entries
+  if (history.length > 10) {
+    history.shift();
+  }
+  
+  // Update metadata
+  this.metadata.set('relevanceHistory', JSON.stringify(history));
+  
+  // Update priority level based on score
+  this.metadata.set('priorityLevel', this._calculatePriorityLevel());
+  
   return this.save();
+};
+
+/**
+ * Calculate priority level based on relevance score
+ * @private
+ * @returns {string} - Priority level (low, medium, high, critical)
+ */
+sourceSchema.methods._calculatePriorityLevel = function() {
+  const score = this.relevanceScore;
+  
+  if (score >= 0.8) {
+    return 'critical';
+  } else if (score >= 0.6) {
+    return 'high';
+  } else if (score >= 0.4) {
+    return 'medium';
+  } else {
+    return 'low';
+  }
+};
+
+/**
+ * Adjust relevance score based on user interaction
+ * @param {string} interactionType - Type of interaction (view, save, share, dismiss)
+ * @param {string} userId - ID of the user who interacted
+ * @param {number} weight - Weight of this interaction (0-1)
+ * @returns {Promise<Document>} - Updated source document
+ */
+sourceSchema.methods.adjustRelevanceByInteraction = function(interactionType, userId, weight = 0.1) {
+  const interactionImpact = {
+    view: 0.02,      // Small positive impact
+    save: 0.05,      // Medium positive impact
+    share: 0.1,      // Large positive impact
+    dismiss: -0.1,   // Negative impact
+    dislike: -0.05   // Medium negative impact
+  };
+  
+  const impact = interactionImpact[interactionType] || 0;
+  const newScore = Math.max(0, Math.min(1, this.relevanceScore + (impact * weight)));
+  
+  return this.updateRelevance(newScore, {
+    reason: `interaction_${interactionType}`,
+    userId
+  });
+};
+
+/**
+ * Decay relevance score over time
+ * @param {number} decayRate - Rate of decay (0-1)
+ * @returns {Promise<Document>} - Updated source document
+ */
+sourceSchema.methods.decayRelevanceScore = function(decayRate = 0.01) {
+  if (!this.lastUpdated) {
+    return Promise.resolve(this);
+  }
+  
+  const now = new Date();
+  const daysSinceUpdate = (now - this.lastUpdated) / (1000 * 60 * 60 * 24);
+  
+  // Apply decay based on days since last update
+  // Limit maximum decay to 50% of original score
+  const decay = Math.min(daysSinceUpdate * decayRate, 0.5);
+  const decayedScore = this.relevanceScore * (1 - decay);
+  const newScore = Math.max(0, Math.min(1, decayedScore));
+  
+  return this.updateRelevance(newScore, {
+    reason: 'time_decay',
+    daysSinceUpdate
+  });
 };
 
 /**

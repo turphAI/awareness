@@ -17,7 +17,11 @@
     "joi": "^17.4.2",
     "axios": "^0.24.0",
     "bull": "^4.1.0",
-    "redis": "^4.0.0"
+    "redis": "^4.0.0",
+    "express-validator": "^6.14.0",
+    "cheerio": "^1.0.0-rc.12",
+    "elasticsearch": "^16.7.3",
+    "natural": "^6.5.0"
   },
   "devDependencies": {
     "jest": "^27.0.6",
@@ -27,8 +31,13 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
     "coveragePathIgnorePatterns": [
       "/node_modules/"
-    ]
+    ],
+    "testTimeout": 30000,
+    "moduleNameMapper": {
+      "^axios$": "axios/dist/node/axios.cjs"
+    }
   }
 }

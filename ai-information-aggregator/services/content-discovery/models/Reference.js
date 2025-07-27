@@ -62,6 +62,26 @@ const referenceSchema = new Schema({
     default: false,
     index: true
   },
+  needsManualResolution: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  manuallyResolved: {
+    type: Boolean,
+    default: false
+  },
+  manualResolutionDate: {
+    type: Date
+  },
+  resolutionAttempts: {
+    type: Number,
+    default: 0
+  },
+  timestamp: {
+    type: String,
+    trim: true
+  },
   targetContentId: {
     type: Schema.Types.ObjectId,
     ref: 'Content',
@@ -266,6 +286,66 @@ referenceSchema.statics.findByType = function(referenceType) {
  */
 referenceSchema.statics.findByVerificationStatus = function(status) {
   return this.find({ verificationStatus: status });
+};
+
+/**
+ * Find references needing manual resolution
+ * @param {number} limit - Maximum number of references to return
+ * @returns {Promise<Array>} - Array of reference documents
+ */
+referenceSchema.statics.findNeedingManualResolution = function(limit = 100) {
+  return this.find({ 
+    needsManualResolution: true,
+    manuallyResolved: { $ne: true }
+  })
+    .sort({ resolutionAttempts: -1, createdAt: -1 })
+    .limit(limit);
+};
+
+/**
+ * Queue for manual resolution
+ * @returns {Promise<Document>} - Updated reference document
+ */
+referenceSchema.methods.queueForManualResolution = function() {
+  this.needsManualResolution = true;
+  this.resolutionAttempts = (this.resolutionAttempts || 0) + 1;
+  
+  this.processingHistory.push({
+    stage: 'resolution',
+    timestamp: new Date(),
+    success: false,
+    error: 'Automatic resolution failed, queued for manual resolution',
+    metadata: new Map([['attempts', this.resolutionAttempts.toString()]])
+  });
+  
+  return this.save();
+};
+
+/**
+ * Mark as manually resolved
+ * @param {Object} resolutionData - Resolution data
+ * @returns {Promise<Document>} - Updated reference document
+ */
+referenceSchema.methods.markAsManuallyResolved = function(resolutionData) {
+  this.resolved = true;
+  this.needsManualResolution = false;
+  this.manuallyResolved = true;
+  this.manualResolutionDate = new Date();
+  
+  if (resolutionData.url) this.url = resolutionData.url;
+  if (resolutionData.title) this.title = resolutionData.title;
+  if (resolutionData.authors) this.authors = resolutionData.authors;
+  if (resolutionData.publishDate) this.publishDate = new Date(resolutionData.publishDate);
+  if (resolutionData.targetContentId) this.targetContentId = resolutionData.targetContentId;
+  
+  this.processingHistory.push({
+    stage: 'resolution',
+    timestamp: new Date(),
+    success: true,
+    metadata: new Map([['method', 'manual']])
+  });
+  
+  return this.save();
 };
 
 // Create model from schema

@@ -1,9 +1,9 @@
-const { ROLES, PERMISSIONS, hasPermission, getPermissions } = require('../utils/roles');
+const { ROLES, PERMISSIONS, hasPermission, getRolePermissions } = require('../utils/roles');
 
 describe('Role-Based Access Control', () => {
   describe('Role Permissions', () => {
     it('should define correct permissions for user role', () => {
-      const userPermissions = getPermissions(ROLES.USER);
+      const userPermissions = getRolePermissions(ROLES.USER);
       
       // User should have basic permissions
       expect(userPermissions).toContain(PERMISSIONS.READ_CONTENT);
@@ -19,7 +19,7 @@ describe('Role-Based Access Control', () => {
     });
     
     it('should define correct permissions for editor role', () => {
-      const editorPermissions = getPermissions(ROLES.EDITOR);
+      const editorPermissions = getRolePermissions(ROLES.EDITOR);
       
       // Editor should have content creation permissions
       expect(editorPermissions).toContain(PERMISSIONS.READ_CONTENT);
@@ -32,7 +32,7 @@ describe('Role-Based Access Control', () => {
     });
     
     it('should define correct permissions for moderator role', () => {
-      const moderatorPermissions = getPermissions(ROLES.MODERATOR);
+      const moderatorPermissions = getRolePermissions(ROLES.MODERATOR);
       
       // Moderator should have content moderation permissions
       expect(moderatorPermissions).toContain(PERMISSIONS.READ_CONTENT);
@@ -46,7 +46,7 @@ describe('Role-Based Access Control', () => {
     });
     
     it('should define all permissions for admin role', () => {
-      const adminPermissions = getPermissions(ROLES.ADMIN);
+      const adminPermissions = getRolePermissions(ROLES.ADMIN);
       const allPermissions = Object.values(PERMISSIONS);
       
       // Admin should have all permissions

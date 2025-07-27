@@ -37,9 +37,11 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Import routes
 const sourceRoutes = require('./routes/sources');
+const categoryRoutes = require('./routes/categories');
 
 // Use routes
 app.use('/api/sources', sourceRoutes);
+app.use('/api/categories', categoryRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
