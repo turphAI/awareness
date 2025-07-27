@@ -248,7 +248,7 @@ const SummaryPreferences = ({ settings, onUpdate }) => {
   };
 
   const getPreviewText = () => {
-    const { defaultLength, detailLevel } = summarySettings;
+    const { defaultLength } = summarySettings;
     
     if (defaultLength === 'brief') {
       return "This research introduces a novel transformer architecture that achieves 15% better performance on language understanding tasks.";

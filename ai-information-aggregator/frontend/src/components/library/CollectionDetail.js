@@ -362,7 +362,7 @@ const CollectionDetail = ({
 
   useEffect(() => {
     loadCollectionContent();
-  }, [collection]);
+  }, [collection]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadCollectionContent = async () => {
     try {

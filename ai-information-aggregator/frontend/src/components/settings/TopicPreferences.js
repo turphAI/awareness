@@ -95,14 +95,7 @@ const Button = styled.button`
   }
 `;
 
-const SecondaryButton = styled(Button)`
-  background-color: #6c757d;
-  margin-left: 10px;
 
-  &:hover {
-    background-color: #545b62;
-  }
-`;
 
 const SaveButton = styled(Button)`
   background-color: #28a745;

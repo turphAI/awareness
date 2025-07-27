@@ -7,6 +7,15 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "jest",
+    "test:unit": "jest --testPathIgnorePatterns=tests/integration --testPathIgnorePatterns=tests/performance",
+    "test:integration": "jest --config=tests/integration/jest.config.js",
+    "test:performance": "jest tests/performance --testTimeout=60000",
+    "test:load": "node tests/performance/loadTest.js",
+    "test:security": "node tests/security/securityTestRunner.js",
+    "test:security:scan": "node -e \"const Scanner = require('./tests/security/vulnerabilityScanner'); new Scanner(process.cwd()).scanProject().then(r => console.log(JSON.stringify(r, null, 2)));\"",
+    "test:uat": "node tests/user-acceptance/uatRunner.js",
+    "test:uat:demo": "node -e \"const UATRunner = require('./tests/user-acceptance/uatRunner'); const runner = new UATRunner(); runner.runDemoSession();\"",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:performance && npm run test:security",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
@@ -40,11 +49,13 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "autocannon": "^7.15.0",
     "eslint": "^7.32.0",
     "jest": "^27.0.6",
     "mongodb-memory-server": "^10.1.4",
     "nodemon": "^2.0.12",
     "prettier": "^2.3.2",
-    "supertest": "^6.1.4"
+    "supertest": "^6.1.4",
+    "uuid": "^9.0.0"
   }
 }

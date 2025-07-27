@@ -1,9 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const proxy = require('express-http-proxy');
-const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const { initializeRoutes } = require('./routes');
+const { authenticateJWT } = require('./middleware/auth');
+const { ipRateLimit, userRateLimit, strictRateLimit } = require('./middleware/rateLimit');
+const serviceDiscovery = require('./utils/serviceDiscovery');
+const logger = require('./utils/logger');
+const { specs, swaggerUi } = require('./docs/swagger');
 
 // Load environment variables
 dotenv.config();
@@ -16,44 +20,130 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Authentication middleware
-const authenticateJWT = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+// Global rate limiting
+app.use(ipRateLimit(
+  parseInt(process.env.RATE_LIMIT_MAX) || 1000, // 1000 requests per window
+  parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000 // 15 minutes
+));
 
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
+// Request logging middleware
+app.use((req, res, next) => {
+  logger.info('Incoming request', {
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    userAgent: req.get('User-Agent')
+  });
+  next();
+});
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) {
-        return res.sendStatus(403);
-      }
+// User-based rate limiting for authenticated routes
+app.use('/api', userRateLimit(
+  parseInt(process.env.USER_RATE_LIMIT_MAX) || 5000, // 5000 requests per user per window
+  parseInt(process.env.USER_RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000 // 15 minutes
+));
 
-      req.user = user;
-      next();
-    });
-  } else {
-    res.sendStatus(401);
-  }
-};
+// Strict rate limiting for sensitive endpoints
+app.use('/api/auth/login', strictRateLimit(5, 15 * 60 * 1000)); // 5 login attempts per 15 minutes
+app.use('/api/auth/register', strictRateLimit(3, 60 * 60 * 1000)); // 3 registrations per hour
+app.use('/api/auth/forgot-password', strictRateLimit(3, 60 * 60 * 1000)); // 3 password resets per hour
 
-// Public routes
-app.use('/api/auth', proxy('http://authentication-service:3001'));
+// API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
+  explorer: true,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'AI Information Aggregator API Documentation'
+}));
 
-// Protected routes
-app.use('/api/sources', authenticateJWT, proxy('http://source-management-service:3002'));
-app.use('/api/content', authenticateJWT, proxy('http://content-discovery-service:3003'));
-app.use('/api/podcasts', authenticateJWT, proxy('http://podcast-extraction-service:3004'));
-app.use('/api/summaries', authenticateJWT, proxy('http://content-summarization-service:3005'));
-app.use('/api/personalization', authenticateJWT, proxy('http://personalization-service:3006'));
-app.use('/api/library', authenticateJWT, proxy('http://library-management-service:3007'));
-app.use('/api/config', authenticateJWT, proxy('http://configuration-management-service:3008'));
+// Redirect root to API documentation
+app.get('/', (req, res) => {
+  res.redirect('/api-docs');
+});
+
+// Initialize routes with authentication middleware
+initializeRoutes(app, authenticateJWT);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+  const serviceStatuses = serviceDiscovery.getAllServiceStatuses();
+  const healthyServices = serviceDiscovery.getHealthyServices();
+  const unhealthyServices = serviceDiscovery.getUnhealthyServices();
+  
+  const overallHealth = unhealthyServices.length === 0 ? 'healthy' : 'degraded';
+  
+  res.status(200).json({
+    status: overallHealth,
+    timestamp: new Date().toISOString(),
+    services: {
+      healthy: healthyServices,
+      unhealthy: unhealthyServices,
+      details: serviceStatuses
+    }
+  });
+});
+
+// Service status endpoint
+app.get('/api/status', (req, res) => {
+  const serviceStatuses = serviceDiscovery.getAllServiceStatuses();
+  
+  res.json({
+    gateway: {
+      status: 'healthy',
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      version: process.env.npm_package_version || '1.0.0'
+    },
+    services: serviceStatuses
+  });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  logger.error('Unhandled error', {
+    error: err.message,
+    stack: err.stack,
+    url: req.url,
+    method: req.method
+  });
+
+  res.status(500).json({
+    error: 'Internal server error',
+    message: 'An unexpected error occurred'
+  });
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+  logger.warn('Route not found', {
+    url: req.url,
+    method: req.method,
+    ip: req.ip
+  });
+
+  res.status(404).json({
+    error: 'Not found',
+    message: 'The requested resource was not found'
+  });
+});
+
+// Start service discovery
+serviceDiscovery.startHealthChecks();
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  serviceDiscovery.stopHealthChecks();
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  logger.info('SIGINT received, shutting down gracefully');
+  serviceDiscovery.stopHealthChecks();
+  process.exit(0);
 });
 
 // Start server
 app.listen(PORT, () => {
+  logger.info(`API Gateway running on port ${PORT}`);
   console.log(`API Gateway running on port ${PORT}`);
 });

@@ -1,0 +1,86 @@
+{
+  "id": "27634233-e817-49f4-8db2-f37fc5105c19",
+  "participant": {
+    "name": "Demo User",
+    "email": "demo@example.com",
+    "role": "UX Designer",
+    "experience": "Intermediate",
+    "device": "Desktop",
+    "browser": "Chrome"
+  },
+  "startTime": "2025-07-27T17:13:38.805Z",
+  "endTime": "2025-07-27T17:13:41.809Z",
+  "scenarios": [
+    {
+      "id": "onboarding",
+      "name": "New User Onboarding",
+      "description": "Complete user registration and initial setup",
+      "estimatedTime": 5,
+      "priority": "high",
+      "tasks": [
+        {
+          "id": "register",
+          "description": "Register a new account",
+          "expectedTime": 2,
+          "successCriteria": "Account created successfully",
+          "status": "completed",
+          "startTime": "2025-07-27T17:13:38.805Z",
+          "endTime": "2025-07-27T17:13:39.805Z",
+          "actualTime": 1,
+          "issues": [],
+          "userFeedback": null
+        },
+        {
+          "id": "verify-email",
+          "description": "Verify email address (if required)",
+          "expectedTime": 1,
+          "successCriteria": "Email verified",
+          "status": "completed",
+          "startTime": "2025-07-27T17:13:39.806Z",
+          "endTime": "2025-07-27T17:13:40.807Z",
+          "actualTime": 1.001,
+          "issues": [],
+          "userFeedback": null
+        },
+        {
+          "id": "initial-setup",
+          "description": "Complete initial preferences setup",
+          "expectedTime": 2,
+          "successCriteria": "Preferences saved and dashboard accessible",
+          "status": "completed",
+          "startTime": "2025-07-27T17:13:40.808Z",
+          "endTime": "2025-07-27T17:13:41.808Z",
+          "actualTime": 1,
+          "issues": [],
+          "userFeedback": null
+        }
+      ],
+      "startTime": "2025-07-27T17:13:38.805Z",
+      "endTime": "2025-07-27T17:13:41.808Z",
+      "status": "completed",
+      "actualTime": 3.003,
+      "completionRate": 100
+    }
+  ],
+  "feedback": [
+    {
+      "id": "d7d35406-fe84-4417-90c3-2f1b80c824cb",
+      "timestamp": "2025-07-27T17:13:41.809Z",
+      "type": "suggestion",
+      "rating": 4,
+      "comment": "Overall good experience, but could use better guidance",
+      "category": "usability",
+      "severity": "low"
+    }
+  ],
+  "metrics": {
+    "totalTasks": 3,
+    "completedTasks": 3,
+    "failedTasks": 0,
+    "totalTime": 3.004,
+    "averageTaskTime": 1.0013333333333334,
+    "completionRate": 100,
+    "averageSatisfaction": 4
+  },
+  "status": "completed"
+}

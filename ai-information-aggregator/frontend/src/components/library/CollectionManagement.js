@@ -183,7 +183,7 @@ const CollectionManagement = () => {
 
   useEffect(() => {
     loadCollections();
-  }, [sortBy, filterBy]);
+  }, [sortBy, filterBy]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadCollections = async () => {
     try {

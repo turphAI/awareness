@@ -49,20 +49,7 @@ const Input = styled(Field)`
   }
 `;
 
-const Select = styled(Field)`
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: white;
-  transition: border-color 0.2s;
 
-  &:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-  }
-`;
 
 const ErrorText = styled.div`
   color: #dc3545;

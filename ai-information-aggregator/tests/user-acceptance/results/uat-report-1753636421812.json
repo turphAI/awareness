@@ -1,0 +1,109 @@
+{
+  "timestamp": "2025-07-27T17:13:41.811Z",
+  "summary": {
+    "totalSessions": 1,
+    "completedSessions": 1,
+    "sessionCompletionRate": 100,
+    "totalTasks": 3,
+    "completedTasks": 3,
+    "taskCompletionRate": 100,
+    "averageSatisfaction": 4,
+    "totalFeedbackItems": 1
+  },
+  "scenarioAnalysis": {
+    "onboarding": {
+      "name": "New User Onboarding",
+      "attempts": 1,
+      "completions": 1,
+      "totalTime": 3.003,
+      "issues": [],
+      "completionRate": 100,
+      "averageTime": 3.003
+    }
+  },
+  "userFeedback": {
+    "total": 1,
+    "byCategory": {
+      "usability": [
+        {
+          "id": "d7d35406-fe84-4417-90c3-2f1b80c824cb",
+          "timestamp": "2025-07-27T17:13:41.809Z",
+          "type": "suggestion",
+          "rating": 4,
+          "comment": "Overall good experience, but could use better guidance",
+          "category": "usability",
+          "severity": "low"
+        }
+      ]
+    },
+    "bySeverity": {
+      "low": [
+        {
+          "id": "d7d35406-fe84-4417-90c3-2f1b80c824cb",
+          "timestamp": "2025-07-27T17:13:41.809Z",
+          "type": "suggestion",
+          "rating": 4,
+          "comment": "Overall good experience, but could use better guidance",
+          "category": "usability",
+          "severity": "low"
+        }
+      ]
+    },
+    "byType": {
+      "suggestion": [
+        {
+          "id": "d7d35406-fe84-4417-90c3-2f1b80c824cb",
+          "timestamp": "2025-07-27T17:13:41.809Z",
+          "type": "suggestion",
+          "rating": 4,
+          "comment": "Overall good experience, but could use better guidance",
+          "category": "usability",
+          "severity": "low"
+        }
+      ]
+    },
+    "commonIssues": [
+      {
+        "keyword": "overall",
+        "frequency": 1
+      },
+      {
+        "keyword": "good",
+        "frequency": 1
+      },
+      {
+        "keyword": "experience,",
+        "frequency": 1
+      },
+      {
+        "keyword": "could",
+        "frequency": 1
+      },
+      {
+        "keyword": "better",
+        "frequency": 1
+      },
+      {
+        "keyword": "guidance",
+        "frequency": 1
+      }
+    ]
+  },
+  "recommendations": [],
+  "sessions": [
+    {
+      "id": "27634233-e817-49f4-8db2-f37fc5105c19",
+      "participant": {
+        "name": "Demo User",
+        "email": "demo@example.com",
+        "role": "UX Designer",
+        "experience": "Intermediate",
+        "device": "Desktop",
+        "browser": "Chrome"
+      },
+      "completionRate": 100,
+      "satisfaction": 4,
+      "totalTime": 3.004
+    }
+  ]
+}

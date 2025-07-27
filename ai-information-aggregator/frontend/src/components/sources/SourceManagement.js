@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import styled from 'styled-components';
 import sourceService from '../../services/sourceService';
@@ -156,8 +156,7 @@ const SourceManagement = () => {
   // Fetch sources
   const { 
     data: sources = [], 
-    isLoading: sourcesLoading, 
-    error: sourcesError 
+    isLoading: sourcesLoading 
   } = useQuery('sources', sourceService.getAllSources, {
     onError: (err) => setError(err.response?.data?.message || 'Failed to load sources')
   });
