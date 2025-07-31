@@ -3,10 +3,26 @@
   "version": "1.0.0",
   "description": "AI Information Aggregator deployed on Vercel",
   "scripts": {
-    "build": "cd ai-information-aggregator/frontend && npm ci && npm run build",
+    "build": "cd ai-information-aggregator/frontend && npm install && npm run build",
     "dev": "cd ai-information-aggregator && npm run dev",
-    "start": "cd ai-information-aggregator && npm start"
+    "start": "cd ai-information-aggregator && npm start",
+    "setup-db": "node scripts/setup-planetscale.js",
+    "test-db": "node scripts/test-database.js",
+    "migrate-db": "node scripts/migrate-from-mongodb.js",
+    "test": "jest --testTimeout=10000",
+    "test:auth": "jest __tests__/auth.test.js --testTimeout=10000"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "mysql2": "^3.6.5",
+    "dotenv": "^16.3.1",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "node-mocks-http": "^1.13.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "babel-jest": "^29.7.0"
+  }
 }
