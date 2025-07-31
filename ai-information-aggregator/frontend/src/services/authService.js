@@ -20,7 +20,9 @@ export const authService = {
   // Register user
   register: async (userData) => {
     try {
+      console.log('Attempting registration with data:', userData);
       const response = await api.post('/auth/register', userData);
+      console.log('Registration response:', response.data);
       const { token, user } = response.data;
       
       if (token) {
@@ -29,6 +31,8 @@ export const authService = {
       
       return { token, user };
     } catch (error) {
+      console.error('Registration error:', error);
+      console.error('Error response:', error.response?.data);
       throw new Error(error.response?.data?.message || 'Registration failed');
     }
   },

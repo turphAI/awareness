@@ -410,15 +410,15 @@ const SourceList = ({
                       min="0"
                       max="1"
                       step="0.1"
-                      value={editingRelevance.score}
+                      value={editingRelevance?.score || 0}
                       onChange={(e) => setEditingRelevance({
                         ...editingRelevance,
                         score: e.target.value
                       })}
-                      onBlur={() => handleRelevanceSubmit(source._id, editingRelevance.score)}
+                      onBlur={() => handleRelevanceSubmit(source._id, editingRelevance?.score || 0)}
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
-                          handleRelevanceSubmit(source._id, editingRelevance.score);
+                          handleRelevanceSubmit(source._id, editingRelevance?.score || 0);
                         }
                       }}
                       autoFocus

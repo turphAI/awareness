@@ -9,17 +9,18 @@
     "test": "jest"
   },
   "dependencies": {
+    "axios": "^0.27.2",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.3",
+    "helmet": "^4.6.0",
     "http-proxy-middleware": "^2.0.6",
     "jsonwebtoken": "^8.5.1",
-    "cors": "^2.8.5",
-    "helmet": "^4.6.0",
-    "winston": "^3.3.3",
-    "dotenv": "^10.0.0",
-    "axios": "^0.27.2",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^4.6.3"
+    "swagger-ui-express": "^4.6.3",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "jest": "^27.0.6",

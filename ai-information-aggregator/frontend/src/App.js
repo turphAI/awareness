@@ -123,6 +123,34 @@ function App() {
             </ProtectedRoute>
           } 
         />
+        <Route 
+          path="/library" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <div style={{ padding: '20px', textAlign: 'center' }}>
+                  <h2>Content Library</h2>
+                  <p>Your saved articles and content will appear here.</p>
+                  <p style={{ color: '#666', fontStyle: 'italic' }}>This feature is coming soon!</p>
+                </div>
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/collections" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <div style={{ padding: '20px', textAlign: 'center' }}>
+                  <h2>Collections</h2>
+                  <p>Organize your content into custom collections.</p>
+                  <p style={{ color: '#666', fontStyle: 'italic' }}>This feature is coming soon!</p>
+                </div>
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
 
         {/* Default redirect */}
         <Route 

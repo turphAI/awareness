@@ -1,6 +1,18 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+// Determine API base URL based on environment
+const getApiBaseUrl = () => {
+  // In production (Vercel), use relative path
+  if (process.env.NODE_ENV === 'production') {
+    return '/api';
+  }
+  
+  // In development, use environment variable or localhost
+  return process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+console.log('API Base URL:', API_BASE_URL);
 
 // Create axios instance
 const api = axios.create({
@@ -35,9 +47,18 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Only redirect on 401 if it's an auth-related endpoint or if the error message indicates invalid token
     if (error.response?.status === 401) {
-      tokenManager.removeToken();
-      window.location.href = '/login';
+      const isAuthEndpoint = error.config?.url?.includes('/auth/');
+      const isTokenError = error.response?.data?.error === 'Token expired' || 
+                          error.response?.data?.error === 'Invalid token' ||
+                          error.response?.data?.error === 'Authentication required';
+      
+      // Only redirect if it's clearly an authentication issue, not a missing endpoint
+      if (isAuthEndpoint || isTokenError) {
+        tokenManager.removeToken();
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

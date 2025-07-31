@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "node start-dev.js",
     "test": "jest",
     "test:unit": "jest --testPathIgnorePatterns=tests/integration --testPathIgnorePatterns=tests/performance",
     "test:integration": "jest --config=tests/integration/jest.config.js",
@@ -39,6 +39,7 @@
   "dependencies": {
     "axios": "^1.10.0",
     "bcrypt": "^5.0.1",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

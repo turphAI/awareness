@@ -1,0 +1,12 @@
+{
+  "name": "awareness-vercel-deployment",
+  "version": "1.0.0",
+  "description": "AI Information Aggregator deployed on Vercel",
+  "scripts": {
+    "build": "cd ai-information-aggregator/frontend && npm install && npm run build",
+    "dev": "cd ai-information-aggregator && npm run dev",
+    "start": "cd ai-information-aggregator && npm start"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

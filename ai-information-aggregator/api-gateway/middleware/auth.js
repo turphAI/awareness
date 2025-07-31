@@ -41,7 +41,7 @@ const authenticateJWT = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev_jwt_secret_key_change_in_production');
     
     // Add user information to request
     req.user = {
@@ -199,7 +199,7 @@ const optionalAuth = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev_jwt_secret_key_change_in_production');
     
     req.user = {
       id: decoded.id,

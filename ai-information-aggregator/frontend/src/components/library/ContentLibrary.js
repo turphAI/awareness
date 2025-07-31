@@ -119,6 +119,8 @@ const ContentLibrary = () => {
     {
       keepPreviousData: true,
       staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: false, // Don't retry failed requests
+      enabled: false, // Disable for now until endpoints are implemented
     }
   );
 
@@ -128,6 +130,8 @@ const ContentLibrary = () => {
     fetchLibraryStats,
     {
       staleTime: 10 * 60 * 1000, // 10 minutes
+      retry: false, // Don't retry failed requests
+      enabled: false, // Disable for now until endpoints are implemented
     }
   );
 

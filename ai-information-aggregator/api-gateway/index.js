@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
+const path = require('path');
 const { initializeRoutes } = require('./routes');
 const { authenticateJWT } = require('./middleware/auth');
 const { ipRateLimit, userRateLimit, strictRateLimit } = require('./middleware/rateLimit');
@@ -16,8 +17,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(helmet());
-app.use(cors());
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for development
+}));
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Global rate limiting
@@ -43,10 +51,18 @@ app.use('/api', userRateLimit(
   parseInt(process.env.USER_RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000 // 15 minutes
 ));
 
-// Strict rate limiting for sensitive endpoints
-app.use('/api/auth/login', strictRateLimit(5, 15 * 60 * 1000)); // 5 login attempts per 15 minutes
-app.use('/api/auth/register', strictRateLimit(3, 60 * 60 * 1000)); // 3 registrations per hour
-app.use('/api/auth/forgot-password', strictRateLimit(3, 60 * 60 * 1000)); // 3 password resets per hour
+// Strict rate limiting for sensitive endpoints (relaxed in development)
+const isDevelopment = process.env.NODE_ENV === 'development';
+if (!isDevelopment) {
+  app.use('/api/auth/login', strictRateLimit(5, 15 * 60 * 1000)); // 5 login attempts per 15 minutes
+  app.use('/api/auth/register', strictRateLimit(3, 60 * 60 * 1000)); // 3 registrations per hour
+  app.use('/api/auth/forgot-password', strictRateLimit(3, 60 * 60 * 1000)); // 3 password resets per hour
+} else {
+  // More lenient rate limiting for development
+  app.use('/api/auth/login', strictRateLimit(100, 15 * 60 * 1000)); // 100 login attempts per 15 minutes
+  app.use('/api/auth/register', strictRateLimit(50, 60 * 60 * 1000)); // 50 registrations per hour
+  app.use('/api/auth/forgot-password', strictRateLimit(50, 60 * 60 * 1000)); // 50 password resets per hour
+}
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
@@ -55,10 +71,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
   customSiteTitle: 'AI Information Aggregator API Documentation'
 }));
 
-// Redirect root to API documentation
-app.get('/', (req, res) => {
-  res.redirect('/api-docs');
-});
+// Serve React frontend static files
+const frontendBuildPath = path.join(__dirname, '../frontend/build');
+app.use(express.static(frontendBuildPath));
 
 // Initialize routes with authentication middleware
 initializeRoutes(app, authenticateJWT);
@@ -112,18 +127,24 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  logger.warn('Route not found', {
-    url: req.url,
-    method: req.method,
-    ip: req.ip
-  });
+// Serve React app for all non-API routes
+app.get('*', (req, res) => {
+  // Don't serve React app for API routes
+  if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+    logger.warn('API route not found', {
+      url: req.url,
+      method: req.method,
+      ip: req.ip
+    });
 
-  res.status(404).json({
-    error: 'Not found',
-    message: 'The requested resource was not found'
-  });
+    return res.status(404).json({
+      error: 'Not found',
+      message: 'The requested API resource was not found'
+    });
+  }
+
+  // Serve React app for all other routes
+  res.sendFile(path.join(frontendBuildPath, 'index.html'));
 });
 
 // Start service discovery

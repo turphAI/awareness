@@ -257,8 +257,26 @@ const SourceManagement = () => {
   };
 
   if (sourcesLoading || categoriesLoading) {
-    return <LoadingSpinner />;
+    return (
+      <Container>
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          <LoadingSpinner />
+          <p>Loading sources and categories...</p>
+          <p>Sources loading: {sourcesLoading ? 'Yes' : 'No'}</p>
+          <p>Categories loading: {categoriesLoading ? 'Yes' : 'No'}</p>
+        </div>
+      </Container>
+    );
   }
+
+  // Debug information
+  console.log('SourceManagement render:', {
+    sourcesLoading,
+    categoriesLoading,
+    sources: sources?.length,
+    categories: categories?.length,
+    error
+  });
 
   return (
     <Container>

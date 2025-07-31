@@ -298,6 +298,8 @@ const Dashboard = () => {
     {
       refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
       staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
+      retry: false, // Don't retry failed requests
+      enabled: false, // Disable for now until endpoints are implemented
     }
   );
 
@@ -307,6 +309,8 @@ const Dashboard = () => {
     fetchDashboardStats,
     {
       refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
+      retry: false, // Don't retry failed requests
+      enabled: false, // Disable for now until endpoints are implemented
     }
   );
 
@@ -322,16 +326,26 @@ const Dashboard = () => {
   };
 
   const handleContentInteraction = async (contentId, interactionType) => {
-    try {
-      await api.post('/interactions', {
-        contentId,
-        type: interactionType
-      });
-      // Refetch to update personalization
-      refetch();
-    } catch (error) {
-      console.error('Failed to record interaction:', error);
+    // For now, just log the interaction since the endpoint isn't implemented yet
+    console.log(`Content interaction: ${interactionType} on ${contentId}`);
+    
+    // Show a simple alert for demonstration
+    if (interactionType === 'view') {
+      alert('This would open the full article in a new tab or modal.');
+    } else if (interactionType === 'save') {
+      alert('Article saved to your library!');
     }
+    
+    // TODO: Implement actual API call when endpoints are ready
+    // try {
+    //   await api.post('/interactions', {
+    //     contentId,
+    //     type: interactionType
+    //   });
+    //   refetch();
+    // } catch (error) {
+    //   console.error('Failed to record interaction:', error);
+    // }
   };
 
   const formatDate = (dateString) => {
@@ -345,6 +359,44 @@ const Dashboard = () => {
     return date.toLocaleDateString();
   };
 
+  // Mock data for demonstration
+  const mockStats = {
+    sourcesMonitored: 12,
+    articlesToday: 8,
+    savedItems: 24,
+    collections: 3
+  };
+
+  const mockContent = [
+    {
+      id: '1',
+      title: 'GPT-4 Turbo: Enhanced Performance and Reduced Costs',
+      summary: 'OpenAI announces GPT-4 Turbo with improved efficiency, longer context windows, and significant cost reductions for developers.',
+      relevanceScore: 0.95,
+      publishDate: new Date().toISOString(),
+      topics: ['llm', 'gpt-4', 'openai'],
+      type: 'news'
+    },
+    {
+      id: '2',
+      title: 'Attention Is All You Need: Transformer Architecture Deep Dive',
+      summary: 'A comprehensive analysis of the transformer architecture that revolutionized natural language processing and machine learning.',
+      relevanceScore: 0.88,
+      publishDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      topics: ['transformers', 'attention', 'nlp'],
+      type: 'academic'
+    },
+    {
+      id: '3',
+      title: 'Building Ethical AI Systems: A Practical Guide',
+      summary: 'Best practices for developing AI systems that are fair, transparent, and accountable in real-world applications.',
+      relevanceScore: 0.82,
+      publishDate: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+      topics: ['ai-ethics', 'fairness', 'transparency'],
+      type: 'blog'
+    }
+  ];
+
   const renderContent = () => {
     if (isLoading) {
       return <LoadingSpinner>Loading your personalized content...</LoadingSpinner>;
@@ -354,7 +406,10 @@ const Dashboard = () => {
       return <ErrorMessage>Failed to load dashboard content. Please try again.</ErrorMessage>;
     }
 
-    if (!dashboardData?.content?.length) {
+    // Use mock data for now
+    const contentToShow = dashboardData?.content || mockContent;
+
+    if (!contentToShow?.length) {
       return (
         <PlaceholderText>
           No content available yet. Add some sources to start discovering relevant AI/LLM content!
@@ -364,7 +419,7 @@ const Dashboard = () => {
 
     return (
       <ContentGrid>
-        {dashboardData.content.map(item => (
+        {contentToShow.map(item => (
           <ContentCard key={item.id}>
             <ContentHeader>
               <ContentTitle>{item.title}</ContentTitle>
@@ -425,19 +480,19 @@ const Dashboard = () => {
 
       <StatsGrid>
         <StatCard>
-          <StatNumber>{stats?.sourcesMonitored || 0}</StatNumber>
+          <StatNumber>{stats?.sourcesMonitored || mockStats.sourcesMonitored}</StatNumber>
           <StatLabel>Sources Monitored</StatLabel>
         </StatCard>
         <StatCard>
-          <StatNumber>{stats?.articlesToday || 0}</StatNumber>
+          <StatNumber>{stats?.articlesToday || mockStats.articlesToday}</StatNumber>
           <StatLabel>Articles Today</StatLabel>
         </StatCard>
         <StatCard>
-          <StatNumber>{stats?.savedItems || 0}</StatNumber>
+          <StatNumber>{stats?.savedItems || mockStats.savedItems}</StatNumber>
           <StatLabel>Saved Items</StatLabel>
         </StatCard>
         <StatCard>
-          <StatNumber>{stats?.collections || 0}</StatNumber>
+          <StatNumber>{stats?.collections || mockStats.collections}</StatNumber>
           <StatLabel>Collections</StatLabel>
         </StatCard>
       </StatsGrid>
