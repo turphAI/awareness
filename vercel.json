@@ -2,10 +2,10 @@
   "version": 2,
   "builds": [
     {
-      "src": "ai-information-aggregator/frontend/package.json",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "build"
+        "distDir": "ai-information-aggregator/frontend/build"
       }
     },
     {
@@ -19,21 +19,8 @@
       "dest": "/api/$1"
     },
     {
-      "src": "/static/(.*)",
-      "dest": "/ai-information-aggregator/frontend/build/static/$1"
-    },
-    {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))",
-      "dest": "/ai-information-aggregator/frontend/build/$1"
-    },
-    {
       "src": "/(.*)",
       "dest": "/ai-information-aggregator/frontend/build/index.html"
     }
-  ],
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 30
-    }
-  }
+  ]
 }
