@@ -1,12 +1,29 @@
 {
   "name": "awareness-vercel-deployment",
   "version": "1.0.0",
+  "type": "module",
   "description": "AI Information Aggregator deployed on Vercel",
   "scripts": {
     "build": "cd ai-information-aggregator/frontend && npm install && npm run build",
     "dev": "cd ai-information-aggregator && npm run dev",
-    "start": "cd ai-information-aggregator && npm start"
+    "start": "cd ai-information-aggregator && npm start",
+    "db:setup": "node scripts/setup-database.js",
+    "db:test": "node scripts/test-database.js",
+    "api:test": "node scripts/test-api-functions.js",
+    "content:test": "node scripts/test-content-functions.js",
+    "workflow:test": "node scripts/test-content-workflows.js"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "axios": "^1.6.0",
+    "bcrypt": "^6.0.0",
+    "cheerio": "^1.0.0-rc.12",
+    "compromise": "^14.10.0",
+    "dotenv": "^17.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.3",
+    "natural": "^6.12.0",
+    "node-fetch": "^3.3.2",
+    "openai": "^4.20.0",
+    "rss-parser": "^3.13.0"
+  }
 }

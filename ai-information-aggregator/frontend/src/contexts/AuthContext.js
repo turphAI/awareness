@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { authService } from '../services/authService';
+import { centralizedApiService } from '../services/centralizedApiService';
 
 // Initial state
 const initialState = {
@@ -99,10 +99,10 @@ export const AuthProvider = ({ children }) => {
   // Load user on app start
   useEffect(() => {
     const loadUser = async () => {
-      if (authService.isAuthenticated()) {
+      if (centralizedApiService.auth.isAuthenticated()) {
         dispatch({ type: AUTH_ACTIONS.LOAD_USER_START });
         try {
-          const user = await authService.getCurrentUser();
+          const user = await centralizedApiService.auth.getCurrentUser();
           dispatch({ type: AUTH_ACTIONS.LOAD_USER_SUCCESS, payload: user });
         } catch (error) {
           dispatch({ type: AUTH_ACTIONS.LOAD_USER_FAILURE, payload: error.message });
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     dispatch({ type: AUTH_ACTIONS.LOGIN_START });
     try {
-      const result = await authService.login(credentials);
+      const result = await centralizedApiService.auth.login(credentials);
       dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: result });
       return result;
     } catch (error) {
@@ -132,7 +132,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     dispatch({ type: AUTH_ACTIONS.REGISTER_START });
     try {
-      const result = await authService.register(userData);
+      const result = await centralizedApiService.auth.register(userData);
       dispatch({ type: AUTH_ACTIONS.REGISTER_SUCCESS, payload: result });
       return result;
     } catch (error) {
@@ -144,7 +144,7 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = async () => {
     try {
-      await authService.logout();
+      await centralizedApiService.auth.logout();
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -155,7 +155,7 @@ export const AuthProvider = ({ children }) => {
   // Update profile function
   const updateProfile = async (profileData) => {
     try {
-      const updatedUser = await authService.updateProfile(profileData);
+      const updatedUser = await centralizedApiService.auth.updateProfile(profileData);
       dispatch({ type: AUTH_ACTIONS.UPDATE_PROFILE_SUCCESS, payload: updatedUser });
       return updatedUser;
     } catch (error) {

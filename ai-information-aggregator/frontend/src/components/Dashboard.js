@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useQuery } from 'react-query';
-import api from '../services/api';
+import { useApi } from '../hooks/useApi';
+import { centralizedApiService } from '../services/centralizedApiService';
 import styled from 'styled-components';
 
 const DashboardContainer = styled.div`
@@ -291,26 +291,26 @@ const Dashboard = () => {
     sortBy: 'relevance'
   });
 
-  // Fetch dashboard data
-  const { data: dashboardData, isLoading, error, refetch } = useQuery(
-    ['dashboard', filters],
+  // Fetch dashboard data using the new API service
+  const { 
+    data: dashboardData, 
+    loading: isLoading, 
+    error, 
+    refetch 
+  } = useApi(
     () => fetchDashboardData(filters),
+    [JSON.stringify(filters)],
     {
-      refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
-      staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
-      retry: false, // Don't retry failed requests
-      enabled: false, // Disable for now until endpoints are implemented
+      immediate: false // Disable for now until endpoints are implemented
     }
   );
 
   // Fetch dashboard statistics
-  const { data: stats } = useQuery(
-    'dashboard-stats',
+  const { data: stats } = useApi(
     fetchDashboardStats,
+    [],
     {
-      refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
-      retry: false, // Don't retry failed requests
-      enabled: false, // Disable for now until endpoints are implemented
+      immediate: false // Disable for now until endpoints are implemented
     }
   );
 
@@ -570,20 +570,19 @@ const Dashboard = () => {
   );
 };
 
-// API functions
+// API functions using centralized service
 const fetchDashboardData = async (filters) => {
-  const params = new URLSearchParams();
+  const params = {};
   Object.entries(filters).forEach(([key, value]) => {
-    if (value) params.append(key, value);
+    if (value) params[key] = value;
   });
   
-  const response = await api.get(`/dashboard/content?${params}`);
-  return response.data;
+  return centralizedApiService.content.getUserContent(params);
 };
 
 const fetchDashboardStats = async () => {
-  const response = await api.get('/dashboard/stats');
-  return response.data;
+  // This would be a new endpoint for dashboard stats
+  return centralizedApiService.apiService.get('/dashboard/stats');
 };
 
 export default Dashboard;

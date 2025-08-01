@@ -1,4 +1,4 @@
-import api from './api';
+import api, { handleApiError } from './api';
 
 class CollectionService {
   /**
@@ -7,7 +7,12 @@ class CollectionService {
    * @returns {Promise} API response
    */
   async createCollection(collectionData) {
-    return api.post('/api/collections', collectionData);
+    try {
+      const response = await api.post('/collections', collectionData);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -16,7 +21,12 @@ class CollectionService {
    * @returns {Promise} API response
    */
   async getUserCollections(params = {}) {
-    return api.get('/api/collections', { params });
+    try {
+      const response = await api.get('/collections', { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -25,7 +35,12 @@ class CollectionService {
    * @returns {Promise} API response
    */
   async getCollection(collectionId) {
-    return api.get(`/api/collections/${collectionId}`);
+    try {
+      const response = await api.get(`/collections/${collectionId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**

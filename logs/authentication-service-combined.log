@@ -1,0 +1,75 @@
+{"level":"info","message":"Connected to MongoDB","service":"authentication-service","timestamp":"2025-07-31T17:12:18.721Z"}
+{"level":"info","message":"Connected to MongoDB","service":"authentication-service","timestamp":"2025-07-31T17:12:18.810Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:18.890Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:18.904Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:18.969Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:18.974Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.038Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.042Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.102Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.113Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.173Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials?service=service1 - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.179Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.244Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials/688ba3f32b969c7bb66f56dd - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.251Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.310Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials/688ba3f32b969c7bb66f56e4 - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.313Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.370Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials/688ba3f32b969c7bb66f56ea/decrypt - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.376Z"}
+{"level":"info","message":"Connected to MongoDB","service":"authentication-service","timestamp":"2025-07-31T17:12:19.401Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.433Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials/688ba3f32b969c7bb66f56f1/decrypt - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.436Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.495Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials/688ba3f32b969c7bb66f56f7/decrypt - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.506Z"}
+{"level":"error","message":"500 - E11000 duplicate key error collection: ai-aggregator.users index: email_1 dup key: { email: \"test@example.com\" } - /api/auth/register - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.517Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.562Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials/688ba3f32b969c7bb66f56fe - PUT - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.566Z"}
+{"level":"error","message":"400 - User with this email already exists - /api/auth/register - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.579Z"}
+{"level":"error","message":"400 - Please provide a valid email address - /api/auth/register - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.583Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.624Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials/688ba3f32b969c7bb66f5705 - PUT - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.626Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.640Z"}
+{"level":"error","message":"401 - Invalid credentials - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.644Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.683Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials/688ba3f32b969c7bb66f570b - DELETE - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.687Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.703Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.743Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/credentials/688ba3f32b969c7bb66f5712 - DELETE - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.747Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.798Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/auth/me - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.801Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/auth/me - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:19.805Z"}
+{"level":"error","message":"400 - Invalid or expired token - /api/auth/reset-password/invalidtoken - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:20.115Z"}
+{"level":"error","message":"400 - Invalid or expired token - /api/auth/verify-email/invalidtoken - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:20.190Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:20.252Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/auth/change-password - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:20.254Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:20.317Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/auth/change-password - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:20.320Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/auth/change-password - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:20.324Z"}
+{"level":"info","message":"Connected to MongoDB","service":"authentication-service","timestamp":"2025-07-31T17:12:20.527Z"}
+{"level":"info","message":"Connected to MongoDB","service":"authentication-service","timestamp":"2025-07-31T17:12:21.432Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.524Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/privacy/export - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.542Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.604Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/privacy/export - GET - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.606Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.663Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/privacy/delete-account - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.665Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.726Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/privacy/delete-account - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.728Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.786Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/privacy/cancel-deletion - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.791Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.848Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/privacy/cancel-deletion - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.850Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.918Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:21.975Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.031Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.084Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/privacy/execute-deletion/688ba3f524e99b6d0487487e - DELETE - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.088Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.143Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.196Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/privacy/execute-deletion/688ba3f624e99b6d04874887 - DELETE - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.200Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.260Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.315Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/privacy/execute-deletion/688ba3f624e99b6d04874891 - DELETE - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.320Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.376Z"}
+{"level":"error","message":"401 - Account is deactivated - /api/auth/login - POST - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.431Z"}
+{"level":"error","message":"401 - Not authorized to access this route - /api/privacy/execute-deletion/688ba3f624e99b6d0487489b - DELETE - ::ffff:127.0.0.1","service":"authentication-service","timestamp":"2025-07-31T17:12:22.435Z"}

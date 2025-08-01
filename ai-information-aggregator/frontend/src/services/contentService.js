@@ -1,4 +1,4 @@
-import api from './api';
+import api, { handleApiError } from './api';
 
 class ContentService {
   /**
@@ -7,7 +7,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async getContent(contentId) {
-    return api.get(`/api/content/${contentId}`);
+    try {
+      const response = await api.get(`/content/${contentId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -16,7 +21,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async searchContent(params = {}) {
-    return api.get('/api/content/search', { params });
+    try {
+      const response = await api.get('/content/search', { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -25,7 +35,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async getUserContent(params = {}) {
-    return api.get('/api/content', { params });
+    try {
+      const response = await api.get('/content', { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -34,7 +49,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async createContent(contentData) {
-    return api.post('/api/content', contentData);
+    try {
+      const response = await api.post('/content', contentData);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -44,7 +64,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async updateContent(contentId, updateData) {
-    return api.put(`/api/content/${contentId}`, updateData);
+    try {
+      const response = await api.put(`/content/${contentId}`, updateData);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -53,7 +78,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async deleteContent(contentId) {
-    return api.delete(`/api/content/${contentId}`);
+    try {
+      const response = await api.delete(`/content/${contentId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -62,7 +92,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async getContentMetadata(contentId) {
-    return api.get(`/api/content/${contentId}/metadata`);
+    try {
+      const response = await api.get(`/content/${contentId}/metadata`);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -72,7 +107,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async getRelatedContent(contentId, params = {}) {
-    return api.get(`/api/content/${contentId}/related`, { params });
+    try {
+      const response = await api.get(`/content/${contentId}/related`, { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -82,7 +122,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async getContentByCategory(category, params = {}) {
-    return api.get(`/api/content/category/${category}`, { params });
+    try {
+      const response = await api.get(`/content/category/${category}`, { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -91,7 +136,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async getTrendingContent(params = {}) {
-    return api.get('/api/content/trending', { params });
+    try {
+      const response = await api.get('/content/trending', { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 
   /**
@@ -100,7 +150,12 @@ class ContentService {
    * @returns {Promise} API response
    */
   async getRecentContent(params = {}) {
-    return api.get('/api/content/recent', { params });
+    try {
+      const response = await api.get('/content/recent', { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 }
 
