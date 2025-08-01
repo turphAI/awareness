@@ -1,72 +1,100 @@
-import { executeQuery } from '../../lib/database';
-import { verifyPassword, generateToken } from '../../lib/auth';
-import { validateLoginData, handleApiError, ApiError } from '../../lib/validation';
+import { executeQuery } from '../../lib/database.js';
+import { 
+  handleCors, 
+  isValidEmail, 
+  comparePassword, 
+  generateToken 
+} from '../../lib/auth.js';
 
-/**
- * User login endpoint
- * @route POST /api/auth/login
- * @access Public
- */
+// Login endpoint for Vercel deployment
 export default async function handler(req, res) {
-  // Only allow POST requests
+  // Handle CORS
+  if (handleCors(req, res)) return;
+
   if (req.method !== 'POST') {
-    return res.status(405).json({
-      success: false,
-      error: 'Method not allowed'
+    return res.status(405).json({ 
+      success: false, 
+      error: 'Method not allowed' 
     });
   }
 
   try {
-    // Validate request data
-    validateLoginData(req.body);
-    
     const { email, password } = req.body;
-    
+
+    // Validation
+    if (!email || !password) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Email and password are required' 
+      });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Invalid email format' 
+      });
+    }
+
     // Find user by email
     const users = await executeQuery(
-      'SELECT id, email, password_hash, name, role, email_verified, active, last_login FROM users WHERE email = ? AND active = TRUE',
+      'SELECT id, email, password_hash, name, role, email_verified FROM users WHERE email = ?',
       [email.toLowerCase()]
     );
-    
+
     if (users.length === 0) {
-      throw new ApiError('Invalid credentials', 401);
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials'
+      });
     }
-    
+
     const user = users[0];
-    
-    // Verify password
-    const isValidPassword = await verifyPassword(password, user.password_hash);
-    if (!isValidPassword) {
-      throw new ApiError('Invalid credentials', 401);
+
+    // Check if email is verified
+    if (!user.email_verified) {
+      return res.status(401).json({
+        success: false,
+        error: 'Please verify your email before logging in'
+      });
     }
-    
+
+    // Verify password
+    const isValidPassword = await comparePassword(password, user.password_hash);
+    if (!isValidPassword) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials'
+      });
+    }
+
     // Update last login
     await executeQuery(
-      'UPDATE users SET last_login = NOW() WHERE id = ?',
+      'UPDATE users SET last_login = NOW(), login_count = login_count + 1 WHERE id = ?',
       [user.id]
     );
-    
+
     // Generate JWT token
-    const token = generateToken({
-      id: user.id,
-      email: user.email,
-      role: user.role
-    });
-    
+    const token = generateToken(user);
+
     // Return success response
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      token,
+      message: 'Login successful',
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role,
-        emailVerified: user.email_verified
-      }
+        role: user.role
+      },
+      token
     });
-    
+
   } catch (error) {
-    handleApiError(error, res);
+    console.error('Login error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
   }
 }

@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
 import styled from 'styled-components';
-import sourceService from '../../services/sourceService';
-import categoryService from '../../services/categoryService';
+import { useSources, useCategories } from '../../hooks/useApi';
 import SourceForm from './SourceForm';
 import SourceList from './SourceList';
 import CategoryManager from './CategoryManager';
@@ -149,88 +147,72 @@ const SourceManagement = () => {
   const [activeTab, setActiveTab] = useState('sources');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingSource, setEditingSource] = useState(null);
-  const [error, setError] = useState(null);
-  
-  const queryClient = useQueryClient();
 
-  // Fetch sources
-  const { 
-    data: sources = [], 
-    isLoading: sourcesLoading 
-  } = useQuery('sources', sourceService.getAllSources, {
-    onError: (err) => setError(err.response?.data?.message || 'Failed to load sources')
-  });
+  // Use the new hooks for sources and categories
+  const {
+    sources,
+    loading: sourcesLoading,
+    error: sourcesError,
+    createSource,
+    updateSource,
+    deleteSource,
+    updateRelevance,
+    createLoading,
+    updateLoading,
+    deleteLoading,
+    relevanceLoading,
+    createError,
+    updateError,
+    deleteError,
+    relevanceError
+  } = useSources();
 
-  // Fetch categories
-  const { 
-    data: categories = [], 
-    isLoading: categoriesLoading 
-  } = useQuery('categories', categoryService.getAllCategories, {
-    onError: (err) => setError(err.response?.data?.message || 'Failed to load categories')
-  });
+  const {
+    categories,
+    loading: categoriesLoading,
+    error: categoriesError
+  } = useCategories();
 
-  // Create source mutation
-  const createSourceMutation = useMutation(sourceService.createSource, {
-    onSuccess: () => {
-      queryClient.invalidateQueries('sources');
+  // Combine errors for display
+  const error = sourcesError || categoriesError || createError || updateError || deleteError || relevanceError;
+
+  const handleCreateSource = async (sourceData) => {
+    try {
+      await createSource(sourceData);
       setShowAddForm(false);
-      setError(null);
-    },
-    onError: (err) => setError(err.response?.data?.message || 'Failed to create source')
-  });
-
-  // Update source mutation
-  const updateSourceMutation = useMutation(
-    ({ id, data }) => sourceService.updateSource(id, data),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('sources');
-        setEditingSource(null);
-        setError(null);
-      },
-      onError: (err) => setError(err.response?.data?.message || 'Failed to update source')
+    } catch (err) {
+      // Error is handled by the hook
     }
-  );
-
-  // Delete source mutation
-  const deleteSourceMutation = useMutation(sourceService.deleteSource, {
-    onSuccess: () => {
-      queryClient.invalidateQueries('sources');
-      setError(null);
-    },
-    onError: (err) => setError(err.response?.data?.message || 'Failed to delete source')
-  });
-
-  // Update relevance mutation
-  const updateRelevanceMutation = useMutation(
-    ({ id, score, reason }) => sourceService.updateRelevance(id, score, reason),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('sources');
-        setError(null);
-      },
-      onError: (err) => setError(err.response?.data?.message || 'Failed to update relevance')
-    }
-  );
-
-  const handleCreateSource = (sourceData) => {
-    createSourceMutation.mutate(sourceData);
   };
 
-  const handleUpdateSource = (sourceData) => {
+  const handleUpdateSource = async (sourceData) => {
     if (editingSource) {
-      updateSourceMutation.mutate({ id: editingSource._id, data: sourceData });
+      try {
+        await updateSource({ id: editingSource._id, data: sourceData });
+        setEditingSource(null);
+        setShowAddForm(false);
+      } catch (err) {
+        // Error is handled by the hook
+      }
     }
   };
 
-  const handleDeleteSource = (sourceId) => {
+  const handleDeleteSource = async (sourceId) => {
     if (window.confirm('Are you sure you want to delete this source?')) {
-      deleteSourceMutation.mutate(sourceId);
+      try {
+        await deleteSource(sourceId);
+      } catch (err) {
+        // Error is handled by the hook
+      }
     }
   };
 
-  const handleUpdateRelevance = (sourceId, score, reason) => {
-    updateRelevanceMutation.mutate({ id: sourceId, score, reason });
+  const handleUpdateRelevance = async (sourceId, score, reason) => {
+    try {
+      await updateRelevance({ id: sourceId, score, reason });
+    } catch (err) {
+      // Error is handled by the hook
+    }
   };
 
   const handleEditSource = (source) => {
@@ -245,14 +227,14 @@ const SourceManagement = () => {
 
   // Calculate statistics
   const stats = {
-    total: sources.length,
-    active: sources.filter(s => s.active).length,
-    byType: sources.reduce((acc, source) => {
+    total: sources?.length || 0,
+    active: sources?.filter(s => s.active)?.length || 0,
+    byType: sources?.reduce((acc, source) => {
       acc[source.type] = (acc[source.type] || 0) + 1;
       return acc;
-    }, {}),
-    avgRelevance: sources.length > 0 
-      ? (sources.reduce((sum, s) => sum + s.relevanceScore, 0) / sources.length).toFixed(2)
+    }, {}) || {},
+    avgRelevance: sources?.length > 0 
+      ? (sources.reduce((sum, s) => sum + (s.relevanceScore || 0), 0) / sources.length).toFixed(2)
       : 0
   };
 
@@ -262,21 +244,10 @@ const SourceManagement = () => {
         <div style={{ textAlign: 'center', padding: '50px' }}>
           <LoadingSpinner />
           <p>Loading sources and categories...</p>
-          <p>Sources loading: {sourcesLoading ? 'Yes' : 'No'}</p>
-          <p>Categories loading: {categoriesLoading ? 'Yes' : 'No'}</p>
         </div>
       </Container>
     );
   }
-
-  // Debug information
-  console.log('SourceManagement render:', {
-    sourcesLoading,
-    categoriesLoading,
-    sources: sources?.length,
-    categories: categories?.length,
-    error
-  });
 
   return (
     <Container>
@@ -295,12 +266,6 @@ const SourceManagement = () => {
       {error && (
         <ErrorMessage>
           {error}
-          <button 
-            onClick={() => setError(null)}
-            style={{ float: 'right', background: 'none', border: 'none', cursor: 'pointer' }}
-          >
-            ×
-          </button>
         </ErrorMessage>
       )}
 
@@ -347,25 +312,25 @@ const SourceManagement = () => {
             categories={categories}
             onSubmit={editingSource ? handleUpdateSource : handleCreateSource}
             onCancel={handleCancelEdit}
-            isLoading={createSourceMutation.isLoading || updateSourceMutation.isLoading}
+            isLoading={createLoading || updateLoading}
           />
         )}
 
         {!showAddForm && activeTab === 'sources' && (
           <SourceList
-            sources={sources}
-            categories={categories}
+            sources={sources || []}
+            categories={categories || []}
             onEdit={handleEditSource}
             onDelete={handleDeleteSource}
             onUpdateRelevance={handleUpdateRelevance}
-            isUpdatingRelevance={updateRelevanceMutation.isLoading}
+            isUpdatingRelevance={relevanceLoading}
           />
         )}
 
         {!showAddForm && activeTab === 'categories' && (
           <CategoryManager
-            categories={categories}
-            sources={sources}
+            categories={categories || []}
+            sources={sources || []}
           />
         )}
       </Content>

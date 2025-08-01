@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import LoginForm from './components/auth/LoginForm';
-import RegisterForm from './components/auth/RegisterForm';
-import ForgotPasswordForm from './components/auth/ForgotPasswordForm';
-import ProfileForm from './components/auth/ProfileForm';
-import Dashboard from './components/Dashboard';
-import SourceManagement from './components/sources/SourceManagement';
-import Settings from './components/settings/Settings';
 import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
 import styled from 'styled-components';
+
+// Lazy load components for code splitting
+const LoginForm = React.lazy(() => import('./components/auth/LoginForm'));
+const RegisterForm = React.lazy(() => import('./components/auth/RegisterForm'));
+const ForgotPasswordForm = React.lazy(() => import('./components/auth/ForgotPasswordForm'));
+const ProfileForm = React.lazy(() => import('./components/auth/ProfileForm'));
+const Dashboard = React.lazy(() => import('./components/Dashboard'));
+const SourceManagement = React.lazy(() => import('./components/sources/SourceManagement'));
+const Settings = React.lazy(() => import('./components/settings/Settings'));
+const ContentLibrary = React.lazy(() => import('./components/library/ContentLibrary'));
+const CollectionManagement = React.lazy(() => import('./components/library/CollectionManagement'));
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -45,6 +50,14 @@ const LoadingText = styled.p`
   font-size: 16px;
 `;
 
+// Component loading fallback
+const ComponentLoader = () => (
+  <LoadingContainer>
+    <Spinner />
+    <LoadingText>Loading...</LoadingText>
+  </LoadingContainer>
+);
+
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -60,25 +73,38 @@ function App() {
   }
 
   return (
-    <AppContainer>
-      <Routes>
+    <ErrorBoundary fallbackComponent="Application">
+      <AppContainer>
+        <Routes>
         {/* Public routes */}
         <Route 
           path="/login" 
           element={
-            isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginForm />
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : (
+              <Suspense fallback={<ComponentLoader />}>
+                <LoginForm />
+              </Suspense>
+            )
           } 
         />
         <Route 
           path="/register" 
           element={
-            isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterForm />
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : (
+              <Suspense fallback={<ComponentLoader />}>
+                <RegisterForm />
+              </Suspense>
+            )
           } 
         />
         <Route 
           path="/forgot-password" 
           element={
-            isAuthenticated ? <Navigate to="/dashboard" replace /> : <ForgotPasswordForm />
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : (
+              <Suspense fallback={<ComponentLoader />}>
+                <ForgotPasswordForm />
+              </Suspense>
+            )
           } 
         />
 
@@ -88,7 +114,9 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <Dashboard />
+                <Suspense fallback={<ComponentLoader />}>
+                  <Dashboard />
+                </Suspense>
               </Layout>
             </ProtectedRoute>
           } 
@@ -98,7 +126,9 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <ProfileForm />
+                <Suspense fallback={<ComponentLoader />}>
+                  <ProfileForm />
+                </Suspense>
               </Layout>
             </ProtectedRoute>
           } 
@@ -108,7 +138,9 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <SourceManagement />
+                <Suspense fallback={<ComponentLoader />}>
+                  <SourceManagement />
+                </Suspense>
               </Layout>
             </ProtectedRoute>
           } 
@@ -118,7 +150,9 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <Settings />
+                <Suspense fallback={<ComponentLoader />}>
+                  <Settings />
+                </Suspense>
               </Layout>
             </ProtectedRoute>
           } 
@@ -128,11 +162,9 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <div style={{ padding: '20px', textAlign: 'center' }}>
-                  <h2>Content Library</h2>
-                  <p>Your saved articles and content will appear here.</p>
-                  <p style={{ color: '#666', fontStyle: 'italic' }}>This feature is coming soon!</p>
-                </div>
+                <Suspense fallback={<ComponentLoader />}>
+                  <ContentLibrary />
+                </Suspense>
               </Layout>
             </ProtectedRoute>
           } 
@@ -142,11 +174,9 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <div style={{ padding: '20px', textAlign: 'center' }}>
-                  <h2>Collections</h2>
-                  <p>Organize your content into custom collections.</p>
-                  <p style={{ color: '#666', fontStyle: 'italic' }}>This feature is coming soon!</p>
-                </div>
+                <Suspense fallback={<ComponentLoader />}>
+                  <CollectionManagement />
+                </Suspense>
               </Layout>
             </ProtectedRoute>
           } 
@@ -169,6 +199,7 @@ function App() {
         />
       </Routes>
     </AppContainer>
+    </ErrorBoundary>
   );
 }
 

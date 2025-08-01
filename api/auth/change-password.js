@@ -1,71 +1,86 @@
-import { executeQuery } from '../../lib/database';
-import { authenticate, verifyPassword, hashPassword } from '../../lib/auth';
-import { handleApiError, ApiError, validatePassword } from '../../lib/validation';
+const { executeQuery } = require('../../lib/database');
+const { 
+  handleCors, 
+  requireAuth,
+  isValidPassword,
+  hashPassword,
+  comparePassword
+} = require('../../lib/auth');
 
-/**
- * Change password endpoint
- * @route POST /api/auth/change-password
- * @access Private
- */
+// Change password endpoint for Vercel deployment
 export default async function handler(req, res) {
-  // Only allow POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({
-      success: false,
-      error: 'Method not allowed'
+  // Handle CORS
+  if (handleCors(req, res)) return;
+
+  if (req.method !== 'PUT') {
+    return res.status(405).json({ 
+      success: false, 
+      error: 'Method not allowed' 
     });
   }
 
-  try {
-    // Authenticate user
-    const user = await authenticate(req);
-    if (!user) {
-      return res.status(401).json({
+  // Require authentication
+  return requireAuth(async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+
+      // Validation
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Current password and new password are required' 
+        });
+      }
+
+      if (!isValidPassword(newPassword)) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'New password must be at least 8 characters with uppercase, lowercase, and number' 
+        });
+      }
+
+      // Get current password hash
+      const users = await executeQuery(
+        'SELECT password_hash FROM users WHERE id = ?',
+        [req.user.id]
+      );
+
+      if (users.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: 'User not found'
+        });
+      }
+
+      // Verify current password
+      const isValidCurrentPassword = await comparePassword(currentPassword, users[0].password_hash);
+      if (!isValidCurrentPassword) {
+        return res.status(400).json({
+          success: false,
+          error: 'Current password is incorrect'
+        });
+      }
+
+      // Hash new password
+      const newPasswordHash = await hashPassword(newPassword);
+
+      // Update password
+      await executeQuery(
+        'UPDATE users SET password_hash = ?, updated_at = NOW() WHERE id = ?',
+        [newPasswordHash, req.user.id]
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: 'Password changed successfully'
+      });
+
+    } catch (error) {
+      console.error('Change password error:', error);
+      return res.status(500).json({
         success: false,
-        error: 'Unauthorized'
+        error: 'Internal server error'
       });
     }
-
-    const { currentPassword, newPassword } = req.body;
-    
-    if (!currentPassword || !newPassword) {
-      throw new ApiError('Current password and new password are required', 400);
-    }
-    
-    // Validate new password
-    validatePassword(newPassword);
-    
-    // Get user's current password hash
-    const users = await executeQuery(
-      'SELECT password_hash FROM users WHERE id = ? AND active = TRUE',
-      [user.id]
-    );
-    
-    if (users.length === 0) {
-      throw new ApiError('User not found', 404);
-    }
-    
-    // Verify current password
-    const isValidPassword = await verifyPassword(currentPassword, users[0].password_hash);
-    if (!isValidPassword) {
-      throw new ApiError('Current password is incorrect', 401);
-    }
-    
-    // Hash new password
-    const newPasswordHash = await hashPassword(newPassword);
-    
-    // Update password
-    await executeQuery(
-      'UPDATE users SET password_hash = ?, updated_at = NOW() WHERE id = ?',
-      [newPasswordHash, user.id]
-    );
-    
-    return res.status(200).json({
-      success: true,
-      message: 'Password changed successfully'
-    });
-    
-  } catch (error) {
-    handleApiError(error, res);
-  }
+  })(req, res);
 }

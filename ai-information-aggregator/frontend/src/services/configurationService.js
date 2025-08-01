@@ -1,26 +1,42 @@
-import api from './api';
+import api, { handleApiError } from './api';
 
 const configurationService = {
   // Topic Preferences
   getTopicPreferences: async () => {
-    const response = await api.get('/configuration/topic-preferences');
-    return response.data;
+    try {
+      const response = await api.get('/configuration/topic-preferences');
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   updateTopicPreferences: async (preferences) => {
-    const response = await api.put('/configuration/topic-preferences', preferences);
-    return response.data;
+    try {
+      const response = await api.put('/configuration/topic-preferences', preferences);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Notification Settings
   getNotificationSettings: async () => {
-    const response = await api.get('/configuration/notification-settings');
-    return response.data;
+    try {
+      const response = await api.get('/configuration/notification-settings');
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   updateNotificationSettings: async (settings) => {
-    const response = await api.put('/configuration/notification-settings', settings);
-    return response.data;
+    try {
+      const response = await api.put('/configuration/notification-settings', settings);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Content Volume Settings

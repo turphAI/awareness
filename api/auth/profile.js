@@ -1,135 +1,158 @@
-import { executeQuery } from '../../lib/database';
-import { authenticate, hashPassword } from '../../lib/auth';
-import { handleApiError, ApiError, validatePassword } from '../../lib/validation';
+const { executeQuery } = require('../../lib/database');
+const { 
+  handleCors, 
+  requireAuth,
+  isValidEmail,
+  hashPassword,
+  comparePassword
+} = require('../../lib/auth');
 
-/**
- * User profile management endpoint
- * @route GET/PUT /api/auth/profile
- * @access Private
- */
+// Profile management endpoint for Vercel deployment
 export default async function handler(req, res) {
-  try {
-    // Authenticate user
-    const user = await authenticate(req);
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: 'Unauthorized'
-      });
-    }
+  // Handle CORS
+  if (handleCors(req, res)) return;
 
-    if (req.method === 'GET') {
-      // Get user profile
-      const users = await executeQuery(
-        `SELECT 
-          id, email, name, role, email_verified, last_login, 
-          preferences, notifications, profile, 
-          data_retention, privacy_settings, 
-          created_at, updated_at
-        FROM users WHERE id = ? AND active = TRUE`,
-        [user.id]
-      );
-      
-      if (users.length === 0) {
-        throw new ApiError('User not found', 404);
-      }
-      
-      const userData = users[0];
-      
-      // Parse JSON fields
-      const userProfile = {
-        id: userData.id,
-        email: userData.email,
-        name: userData.name,
-        role: userData.role,
-        emailVerified: userData.email_verified,
-        lastLogin: userData.last_login,
-        preferences: userData.preferences ? JSON.parse(userData.preferences) : {},
-        notifications: userData.notifications ? JSON.parse(userData.notifications) : {},
-        profile: userData.profile ? JSON.parse(userData.profile) : {},
-        dataRetention: userData.data_retention ? JSON.parse(userData.data_retention) : {},
-        privacySettings: userData.privacy_settings ? JSON.parse(userData.privacy_settings) : {},
-        createdAt: userData.created_at,
-        updatedAt: userData.updated_at
-      };
-      
-      return res.status(200).json({
-        success: true,
-        user: userProfile
-      });
-      
-    } else if (req.method === 'PUT') {
-      // Update user profile
-      const { 
-        name, 
-        preferences, 
-        notifications, 
-        profile, 
-        dataRetention, 
-        privacySettings 
-      } = req.body;
-      
-      const updates = [];
-      const values = [];
-      
-      if (name !== undefined) {
-        if (!name || name.length < 2 || name.length > 50) {
-          throw new ApiError('Name must be between 2 and 50 characters', 400);
+  // Require authentication for all profile operations
+  return requireAuth(async (req, res) => {
+    try {
+      if (req.method === 'GET') {
+        // Get user profile
+        const users = await executeQuery(
+          `SELECT 
+            id, email, name, role, bio, avatar, organization, 
+            job_title, location, website, preferences, notifications,
+            email_verified, last_login, login_count, created_at
+          FROM users WHERE id = ?`,
+          [req.user.id]
+        );
+
+        if (users.length === 0) {
+          return res.status(404).json({
+            success: false,
+            error: 'User not found'
+          });
         }
-        updates.push('name = ?');
-        values.push(name);
+
+        const user = users[0];
+        
+        // Parse JSON fields
+        user.preferences = user.preferences ? JSON.parse(user.preferences) : {};
+        user.notifications = user.notifications ? JSON.parse(user.notifications) : {};
+
+        return res.status(200).json({
+          success: true,
+          user
+        });
       }
-      
-      if (preferences !== undefined) {
-        updates.push('preferences = ?');
-        values.push(JSON.stringify(preferences));
+
+      if (req.method === 'PUT') {
+        // Update user profile
+        const { 
+          name, bio, avatar, organization, job_title, 
+          location, website, preferences, notifications 
+        } = req.body;
+
+        const updates = [];
+        const values = [];
+
+        if (name !== undefined) {
+          if (name.trim().length < 2) {
+            return res.status(400).json({
+              success: false,
+              error: 'Name must be at least 2 characters long'
+            });
+          }
+          updates.push('name = ?');
+          values.push(name.trim());
+        }
+
+        if (bio !== undefined) {
+          updates.push('bio = ?');
+          values.push(bio);
+        }
+
+        if (avatar !== undefined) {
+          updates.push('avatar = ?');
+          values.push(avatar);
+        }
+
+        if (organization !== undefined) {
+          updates.push('organization = ?');
+          values.push(organization);
+        }
+
+        if (job_title !== undefined) {
+          updates.push('job_title = ?');
+          values.push(job_title);
+        }
+
+        if (location !== undefined) {
+          updates.push('location = ?');
+          values.push(location);
+        }
+
+        if (website !== undefined) {
+          updates.push('website = ?');
+          values.push(website);
+        }
+
+        if (preferences !== undefined) {
+          updates.push('preferences = ?');
+          values.push(JSON.stringify(preferences));
+        }
+
+        if (notifications !== undefined) {
+          updates.push('notifications = ?');
+          values.push(JSON.stringify(notifications));
+        }
+
+        if (updates.length === 0) {
+          return res.status(400).json({
+            success: false,
+            error: 'No valid fields to update'
+          });
+        }
+
+        updates.push('updated_at = NOW()');
+        values.push(req.user.id);
+
+        await executeQuery(
+          `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
+          values
+        );
+
+        // Get updated user
+        const updatedUsers = await executeQuery(
+          `SELECT 
+            id, email, name, role, bio, avatar, organization, 
+            job_title, location, website, preferences, notifications,
+            email_verified, last_login, login_count, created_at, updated_at
+          FROM users WHERE id = ?`,
+          [req.user.id]
+        );
+
+        const updatedUser = updatedUsers[0];
+        updatedUser.preferences = updatedUser.preferences ? JSON.parse(updatedUser.preferences) : {};
+        updatedUser.notifications = updatedUser.notifications ? JSON.parse(updatedUser.notifications) : {};
+
+        return res.status(200).json({
+          success: true,
+          message: 'Profile updated successfully',
+          user: updatedUser
+        });
       }
-      
-      if (notifications !== undefined) {
-        updates.push('notifications = ?');
-        values.push(JSON.stringify(notifications));
-      }
-      
-      if (profile !== undefined) {
-        updates.push('profile = ?');
-        values.push(JSON.stringify(profile));
-      }
-      
-      if (dataRetention !== undefined) {
-        updates.push('data_retention = ?');
-        values.push(JSON.stringify(dataRetention));
-      }
-      
-      if (privacySettings !== undefined) {
-        updates.push('privacy_settings = ?');
-        values.push(JSON.stringify(privacySettings));
-      }
-      
-      if (updates.length === 0) {
-        throw new ApiError('No valid fields to update', 400);
-      }
-      
-      updates.push('updated_at = NOW()');
-      values.push(user.id);
-      
-      await executeQuery(
-        `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
-        values
-      );
-      
-      return res.status(200).json({
-        success: true,
-        message: 'Profile updated successfully'
-      });
-      
-    } else {
+
       return res.status(405).json({
         success: false,
         error: 'Method not allowed'
       });
+
+    } catch (error) {
+      console.error('Profile error:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Internal server error'
+      });
     }
-    
-  } catch (error) {
-    handleApiError(error, res);
-  }
+  })(req, res);
 }

@@ -1,64 +1,104 @@
-import api from './api';
+import api, { handleApiError } from './api';
 
 const categoryService = {
   // Get all categories
   getAllCategories: async () => {
-    const response = await api.get('/categories');
-    return response.data;
+    try {
+      const response = await api.get('/categories');
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Get category by ID
   getCategoryById: async (id) => {
-    const response = await api.get(`/categories/${id}`);
-    return response.data;
+    try {
+      const response = await api.get(`/categories/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Create new category
   createCategory: async (categoryData) => {
-    const response = await api.post('/categories', categoryData);
-    return response.data;
+    try {
+      const response = await api.post('/categories', categoryData);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Update category
   updateCategory: async (id, categoryData) => {
-    const response = await api.put(`/categories/${id}`, categoryData);
-    return response.data;
+    try {
+      const response = await api.put(`/categories/${id}`, categoryData);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Delete category
   deleteCategory: async (id) => {
-    const response = await api.delete(`/categories/${id}`);
-    return response.data;
+    try {
+      const response = await api.delete(`/categories/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Get sources in category
   getCategorySources: async (id) => {
-    const response = await api.get(`/categories/${id}/sources`);
-    return response.data;
+    try {
+      const response = await api.get(`/categories/${id}/sources`);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Add source to category
   addSourceToCategory: async (categoryId, sourceId) => {
-    const response = await api.post(`/categories/${categoryId}/sources`, { sourceId });
-    return response.data;
+    try {
+      const response = await api.post(`/categories/${categoryId}/sources`, { sourceId });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Remove source from category
   removeSourceFromCategory: async (categoryId, sourceId) => {
-    const response = await api.delete(`/categories/${categoryId}/sources`, { data: { sourceId } });
-    return response.data;
+    try {
+      const response = await api.delete(`/categories/${categoryId}/sources`, { data: { sourceId } });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Get subcategories
   getSubcategories: async (id) => {
-    const response = await api.get(`/categories/${id}/subcategories`);
-    return response.data;
+    try {
+      const response = await api.get(`/categories/${id}/subcategories`);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Suggest categories for source
   suggestCategories: async (sourceData) => {
-    const response = await api.post('/categories/suggest', sourceData);
-    return response.data;
+    try {
+      const response = await api.post('/categories/suggest', sourceData);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 };
 

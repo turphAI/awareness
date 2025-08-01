@@ -1,70 +1,90 @@
-import api from './api';
+import api, { handleApiError } from './api';
+import { centralizedApiService } from './centralizedApiService';
 
 const sourceService = {
-  // Get all sources
+  // Get all sources - now uses centralized service
   getAllSources: async () => {
-    const response = await api.get('/sources');
-    return response.data;
+    return centralizedApiService.sources.getAll();
   },
 
-  // Get source by ID
+  // Get source by ID - now uses centralized service
   getSourceById: async (id) => {
-    const response = await api.get(`/sources/${id}`);
-    return response.data;
+    return centralizedApiService.sources.getById(id);
   },
 
-  // Create new source
+  // Create new source - now uses centralized service
   createSource: async (sourceData) => {
-    const response = await api.post('/sources', sourceData);
-    return response.data;
+    return centralizedApiService.sources.create(sourceData);
   },
 
-  // Update source
+  // Update source - now uses centralized service
   updateSource: async (id, sourceData) => {
-    const response = await api.put(`/sources/${id}`, sourceData);
-    return response.data;
+    return centralizedApiService.sources.update(id, sourceData);
   },
 
-  // Delete source
+  // Delete source - now uses centralized service
   deleteSource: async (id) => {
-    const response = await api.delete(`/sources/${id}`);
-    return response.data;
+    return centralizedApiService.sources.delete(id);
   },
 
   // Update source relevance
   updateRelevance: async (id, score, reason) => {
-    const response = await api.put(`/sources/${id}/relevance`, { score, reason });
-    return response.data;
+    try {
+      const response = await api.put(`/sources/${id}/relevance`, { score, reason });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Validate URL
   validateUrl: async (url) => {
-    const response = await api.post('/sources/validate-url', { url });
-    return response.data;
+    try {
+      const response = await api.post('/sources/validate-url', { url });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Get URL metadata
   getUrlMetadata: async (url) => {
-    const response = await api.post('/sources/metadata', { url });
-    return response.data;
+    try {
+      const response = await api.post('/sources/metadata', { url });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Get sources by type
   getSourcesByType: async (type) => {
-    const response = await api.get(`/sources/type/${type}`);
-    return response.data;
+    try {
+      const response = await api.get(`/sources/type/${type}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Get sources by category
   getSourcesByCategory: async (category) => {
-    const response = await api.get(`/sources/category/${category}`);
-    return response.data;
+    try {
+      const response = await api.get(`/sources/category/${category}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   },
 
   // Bulk import sources
   bulkImportSources: async (sources) => {
-    const response = await api.post('/sources/bulk-import', { sources });
-    return response.data;
+    try {
+      const response = await api.post('/sources/bulk-import', { sources });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
   }
 };
 
